@@ -38,7 +38,7 @@ async function updateQuotesMessage(client, page = 1) {
   const start = (page - 1) * perPage;
   const pageQuotes = all.slice(start, start + perPage);
 
-  const embed = new EmberBuilder()
+  const embed = new EmbedBuilder()
     .setTitle(`Lista cytatów - strona ${page}/${totalPages}`)
     .setDescription(
       pageQuotes.length === 0
