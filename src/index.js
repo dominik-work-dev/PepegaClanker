@@ -86,20 +86,32 @@ client.on("interactionCreate", async (interaction) => {
     const text = interaction.options.getString("text");
 
     if (!text || text.trim().length === 0) {
-      return interaction.reply("Cytat nie może być pusty you clanker monki.");
+      return interaction.reply({
+        content: "Cytat nie może być pusty you clanker monki",
+        ephemeral: true,
+      });
     }
 
     const quote = quotes.addQuote(text);
-    return interaction.reply(`Dodano cytat #${quote.id}: "${quote.text}`);
+    return interaction.reply({
+      content: `Dodano cytat #${quote.id}: "${quote.text}`,
+      ephemeral: true,
+    });
   }
 
   // /quote
   if (interaction.commandName === "quote") {
     const quote = quotes.randomQuote();
 
-    if (!quote) return interaction.reply("Lista złotych myśli jest pusta");
+    if (!quote)
+      return interaction.reply({
+        content: "Lista złotych myśli jest pusta you monki",
+        ephemeral: true,
+      });
 
-    return interaction.reply(`#${quote.id}: ${quote.text}`);
+    return interaction.reply({
+      content: `#${quote.id}: ${quote.text}`,
+    });
   }
 
   // /delquote
@@ -108,16 +120,25 @@ client.on("interactionCreate", async (interaction) => {
     const removed = quotes.deleteQuote(id);
 
     if (!removed)
-      return interaction.reply(`Złota myśl o ID #${id} nie istnieje you monki`);
+      return interaction.reply({
+        content: `Złota myśl o ID #${id} nie istnieje you monki`,
+        ephemeral: true,
+      });
 
-    return interaction.reply(`Usnięto cytat #${id}: ${removed.text}`);
+    return interaction.reply({
+      content: `Usnięto cytat #${id}: ${removed.text}`,
+      ephemeral: true,
+    });
   }
 
   // /quotes
   if (interaction.commandName === "quotes") {
     const all = quotes.getAllQuotes();
     if (all.length === 0) {
-      return interaction.reply("Brak złotych myśli you clanker");
+      return interaction.reply({
+        content: "Brak złotych myśli you clanker",
+        ephemeral: true,
+      });
     }
 
     const embed = new EmbedBuilder()
