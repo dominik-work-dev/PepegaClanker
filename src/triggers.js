@@ -120,6 +120,11 @@ module.exports = [
     text: ":monkey_face:",
   },
   {
+    match: "overwatch",
+    text: ":monkey: :handshake:",
+    customEmoji: "pepegaSit",
+  },
+  {
     match: "winston",
     react: ":6493winstare:",
   },
