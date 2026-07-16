@@ -24,13 +24,36 @@ async function updateQuotesMessage(client, page = 1) {
   const start = (page - 1) * perPage;
   const pageQuotes = all.slice(start, start + perPage);
 
+  const colId = 4;
+  const colQuote = 32;
+
+  const pad = (str, len) =>
+    str.length > len ? str.slice(0, len - 3) + "..." : str.padEnd(len, " ");
+
+  let lines = [];
+  lines.push(
+    pad("#", 4) +
+      pad("ID", colID) +
+      pad("Złota myśl", colQuote)
+  );
+
+  if(pageQuotes.length === 0) {
+    lines.push("Brak złotych myśli");
+  } else {
+    for (let i = 0; i < pageQuotes.length; i++) {
+      const q = pageQuotes[i];
+      const row =
+        pad(String(i + 1 + start), 4) +
+        pad(String(q.id), colId) +
+        pad(q.text, colQuote) +
+
+      lines.push(row);
+    }
+  }
+
   const embed = new EmbedBuilder()
-    .setTitle(`Lista cytatów - strona ${page}/${totalPages}`)
-    .setDescription(
-      pageQuotes.length === 0
-        ? "Brak cytatów"
-        : pageQuotes.map((q) => `**#${q.id}** - ${q.text}`).join("\n"),
-    )
+    .setTitle(`📜 Lista cytatów - strona ${page}/${totalPages}`)
+    .setDescription("```" + lines.join("\n") + "```")
     .setColor("Random");
 
   const row = new ActionRowBuilder().addComponents(
