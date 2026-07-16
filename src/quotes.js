@@ -20,7 +20,7 @@ function saveQuotes(quotes) {
 }
 
 // Generate next quote ID
-function generateId() {
+function generateId(quotes) {
   if (quotes.length === 0) return 1;
   return Math.max(...quotes.map((q) => q.id)) + 1;
 }
