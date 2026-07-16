@@ -59,9 +59,15 @@ function deleteQuote(id) {
   return removed;
 }
 
+// Return all quotes
+function getAllQuotes() {
+  return loadQuotes();
+}
+
 module.exports = {
   loadQuotes,
   addQuote,
   randomQuote,
   deleteQuote,
+  getAllQuotes,
 };

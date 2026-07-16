@@ -29,7 +29,39 @@ async function registerCommands() {
       body: [
         {
           name: "ping",
-          description: "Sprawdzenie czy bot działa.",
+          description: "Sprawdzenie czy bot działa",
+        },
+        {
+          name: "quote",
+          description: "Losuje jedną złotą myśl",
+        },
+        {
+          name: "addquote",
+          description: "Dodaje nową złotą myśl",
+          options: [
+            {
+              type: 3, //STRING
+              name: "text",
+              description: "Treść złotej myśli do zapisania, you clanker",
+              required: true,
+            },
+          ],
+        },
+        {
+          name: "delquote",
+          description: "Usuwa złotą myśl o danym ID",
+          options: [
+            {
+              type: 4, // INTEGER
+              name: "id",
+              description: "ID cytatu do usunięcia",
+              required: true,
+            },
+          ],
+        },
+        {
+          name: "quotes",
+          description: "Listuje wszystkie złote myśli",
         },
       ],
     });
@@ -75,9 +107,25 @@ client.on("interactionCreate", async (interaction) => {
     const id = interaction.options.getStrin("id");
     const removed = quotes.deleteQuote(id);
 
-    if(!removed) return interaction.reply(`Złota myśl o ID #${id} nie istnieje you monki`);
+    if (!removed)
+      return interaction.reply(`Złota myśl o ID #${id} nie istnieje you monki`);
 
-    return interaction.reply(`Usnięto cytat #${id}: ${removed.text}`)
+    return interaction.reply(`Usnięto cytat #${id}: ${removed.text}`);
+  }
+
+  // /quotes
+  if (interaction.commandName === "quotes") {
+    const all = quotes.getAllQuotes();
+    if (all.length === 0) {
+      return interaction.reply("Brak złotych myśli you clanker");
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle("Lista cytatów")
+      .setDescription(all.map((q) => `**#${q.id}** - ${q.text}`).join("\n"))
+      .setColor("Random");
+
+    return interaction.reply({ embeds: [embed] });
   }
 });
 
