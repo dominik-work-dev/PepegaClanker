@@ -3,7 +3,7 @@ const { google } = require("googleapis");
 const auth = new google.auth.GoogleAuth({
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
   },
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
@@ -15,6 +15,19 @@ module.exports = {
   // ---------------------------
   // QUOTES
   // ---------------------------
+  async getQuotes() {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: "Quotes!A:B",
+    });
+
+    const rows = res.data.values || [];
+    return rows.slice(1).map(([id, text]) => ({
+      id: Number(id),
+      text,
+    }));
+  },
+
   async addQuote(text) {
     const quotes = await this.getQuotes();
     const id = quotes.length ? quotes[quotes.length - 1].id + 1 : 1;
@@ -29,22 +42,6 @@ module.exports = {
     });
 
     return { id, text };
-  },
-
-  async addQuote(text) {
-    const quotes = await this.getQuotes();
-    const id = quotes.length ? quotes[quotes.length - 1].id + 1 : 1;
-
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: "Quotes!A:B",
-      valueInputOption: "RAW",
-      requestBody: {
-        values: [[id, text]],
-      },
-    });
-
-    return id;
   },
 
   async deleteQuote(id) {
