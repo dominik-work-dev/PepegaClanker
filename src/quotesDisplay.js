@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const quotes = require("./quotes");
 
-const STATE_PATH = path.join(__dirname, "state.json");
+const STATE_PATH = path.join(__dirname, "./state.json");
 
 function loadState() {
   try {

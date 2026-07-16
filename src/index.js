@@ -112,6 +112,7 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.deferUpdate();
 
       const state = loadState();
+      console.log(state)
 
       if (!state.quotesMessageId) {
         const msg = await interaction.channel.send("Ładowanie złotych myśli...");
