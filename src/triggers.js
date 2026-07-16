@@ -90,6 +90,11 @@ module.exports = [
     customEmoji: "PeepoStop",
   },
   {
+    match: "kefir",
+    text: "kefirek :arrow_right: :skull:",
+    chance: 0.2,
+  },
+  {
     match: "monkey",
     text: ":monkey_face:",
   },
