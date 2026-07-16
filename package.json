@@ -1,0 +1,16 @@
+{
+  "name": "pepegaclanker",
+  "version": "1.0.0",
+  "description": "Pepega Clanker is a Discord bot that logs users leaving the server and replies to a set of keywords",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Dominic Sevi",
+  "keywords": [],
+  "type": "commonjs",
+  "dependencies": {
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.4.2"
+  }
+}
