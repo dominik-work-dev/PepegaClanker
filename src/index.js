@@ -200,7 +200,7 @@ client.on("interactionCreate", async (interaction) => {
 
       const embed = new EmbedBuilder()
         .setTitle("Lista cytatów")
-        .setDescription(all.map((q) => `**#${q.id}** - ${q.text}`).join("\n"))
+        .setDescription(all.map((q) => `**#${q.id}** - ${q.quote}`).join("\n"))
         .setColor("Random");
 
       return interaction.reply({ embeds: [embed] });

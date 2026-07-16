@@ -43,7 +43,7 @@ async function updateQuotesMessage(client, page = 1) {
     .setDescription(
       pageQuotes.length === 0
         ? "Brak cytatów"
-        : pageQuotes.map((q) => `**#${q.id}** - ${q.text}`).join("\n"),
+        : pageQuotes.map((q) => `**#${q.id}** - ${q.quote}`).join("\n"),
     )
     .setColor("Random");
 
