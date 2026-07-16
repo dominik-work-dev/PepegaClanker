@@ -10,6 +10,9 @@ const {
   Client,
   GatewayIntentBits,
   EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   REST,
   Routes,
 } = require("discord.js");
@@ -146,7 +149,7 @@ client.on("interactionCreate", async (interaction) => {
       const quote = quotes.addQuote(text);
       await updateQuotesMessage(client); // odświeża stronę, na której był użytkown
       return interaction.reply({
-        content: `Dodano cytat #${quote.id}: "${quote.text}`,
+        content: `Dodano cytat #${quote.id}: "${quote.text}"`,
         ephemeral: true,
       });
     }
@@ -168,7 +171,7 @@ client.on("interactionCreate", async (interaction) => {
 
     // /deleteQuote
     if (interaction.commandName === "deletequote") {
-      const id = interaction.options.getStrin("id");
+      const id = interaction.options.getInteger("id");
       const removed = quotes.deleteQuote(id);
 
       if (!removed)
@@ -215,29 +218,6 @@ client.on("interactionCreate", async (interaction) => {
         content:
           "⚠ Ta komenda utworzy persistent message z listą złotych myśli. Kontynuować?",
         components: [row],
-        ephemeral: true,
-      });
-      const state = loadState();
-
-      // jeśli wiadomość już istnieje — tylko odświeżamy
-      if (state.quotesMessageId && state.quotesChannelId) {
-        await updateQuotesMessage(client, 1);
-        return interaction.reply({
-          content: "Zaktualizowano listę.",
-          ephemeral: true,
-        });
-      }
-
-      // tworzymy nową wiadomość
-      const msg = await interaction.channel.send("Ładowanie cytatów...");
-      state.quotesMessageId = msg.id;
-      state.quotesChannelId = msg.channel.id;
-      saveState(state);
-
-      await updateQuotesMessage(client, 1);
-
-      return interaction.reply({
-        content: "Lista cytatów została utworzona.",
         ephemeral: true,
       });
     }
