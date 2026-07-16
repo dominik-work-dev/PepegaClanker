@@ -1,6 +1,6 @@
 require("dotenv").config();
 const triggers = require("./triggers.js");
-const quotes = require("./quotes.js");
+const quotes = require("./google.js");
 const {
   updateQuotesMessage,
   loadState,
@@ -35,7 +35,7 @@ const client = new Client({
 
 async function registerCommands() {
   try {
-    await rest.put( Routes.applicationGuildCommands(dsc_app_id, dsc_server_id), {
+    await rest.put(Routes.applicationGuildCommands(dsc_app_id, dsc_server_id), {
       body: [
         {
           name: "ping",
@@ -111,14 +111,16 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.customId === "quotes_confirm") {
       await interaction.deferUpdate();
 
-      const state = loadState();
-      console.log(state)
+      const state = await quotes.getState();
 
       if (!state.quotesMessageId) {
-        const msg = await interaction.channel.send("Ładowanie złotych myśli...");
+        const msg = await interaction.channel.send(
+          "Ładowanie złotych myśli...",
+        );
         state.quotesMessageId = msg.id;
         state.quotesChannelId = msg.channel.id;
-        saveState(state);
+        await quotes.setState("quotesMessageId", msg.id);
+        await quotes.setState("quotesChannelId", msg.channel.id);
       }
 
       await updateQuotesMessage(client, 1);
@@ -144,26 +146,29 @@ client.on("interactionCreate", async (interaction) => {
       if (!text || text.trim().length === 0) {
         return interaction.reply({
           content: "Cytat nie może być pusty you clanker monki",
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
-      const quote = quotes.addQuote(text);
-      await updateQuotesMessage(client); // odświeża stronę, na której był użytkown
+      const quote = await quotes.addQuote(text);
+      const state = await quotes.getState();
+      const currentPage = Number(state.currentPage) || 1;
+      await updateQuotesMessage(client, currentPage);
+
       return interaction.reply({
         content: `Dodano cytat #${quote.id}: "${quote.text}"`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     // /quote
     if (interaction.commandName === "quote") {
-      const quote = quotes.randomQuote();
+      const quote = await quotes.getRandomQuote();
 
       if (!quote)
         return interaction.reply({
           content: "Lista złotych myśli jest pusta you monki",
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
 
       return interaction.reply({
@@ -174,34 +179,37 @@ client.on("interactionCreate", async (interaction) => {
     // /deleteQuote
     if (interaction.commandName === "deletequote") {
       const id = interaction.options.getInteger("id");
-      const removed = quotes.deleteQuote(id);
+      const removed = await quotes.deleteQuote(id);
 
       if (!removed)
         return interaction.reply({
           content: `Złota myśl o ID #${id} nie istnieje you monki`,
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
 
-      await updateQuotesMessage(client); // odświeża stronę, na której był użytkown
+      const state = await quotes.getState();
+      const currentPage = Number(state.currentPage) || 1;
+      await updateQuotesMessage(client, currentPage);
+
       return interaction.reply({
         content: `Usnięto cytat #${id}: ${removed.text}`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     // /listQuotes
     if (interaction.commandName === "listquotes") {
-      const all = quotes.getAllQuotes();
+      const all = await quotes.getQuotes();
       if (all.length === 0) {
         return interaction.reply({
           content: "Brak złotych myśli you clanker",
-          flags: MessageFlags.Ephemeral
+          flags: MessageFlags.Ephemeral,
         });
       }
 
       const embed = new EmbedBuilder()
         .setTitle("Lista cytatów")
-        .setDescription(all.map((q) => `**#${q.id}** - ${q.quote}`).join("\n"))
+        .setDescription(all.map((q) => `**#${q.id}** - ${q.text}`).join("\n"))
         .setColor("Random");
 
       return interaction.reply({ embeds: [embed] });
@@ -220,7 +228,7 @@ client.on("interactionCreate", async (interaction) => {
         content:
           "⚠ Ta komenda utworzy persistent message z listą złotych myśli. Kontynuować?",
         components: [row],
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
   }
