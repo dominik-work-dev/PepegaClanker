@@ -1,6 +1,6 @@
 const {
   EmbedBuilder,
-  ActionRowBuiilder,
+  ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
 } = require("discord.js");
@@ -14,7 +14,7 @@ function loadState() {
   try {
     return JSON.parse(fs.readFileSync(STATE_PATH, "utf-8"));
   } catch {
-    return { quotesMessageId: null, qutoesChannelId: null };
+    return { quotesMessageId: null, quotesChannelId: null };
   }
 }
 
@@ -24,9 +24,9 @@ function saveState(state) {
 
 async function updateQuotesMessage(client, page = 1) {
   const state = loadState();
-  if (!state.qutoesChannelId || !state.quotesMessageId) return;
+  if (!state.quotesChannelId || !state.quotesMessageId) return;
 
-  const channel = await client.channels.fetch(state.qutoesChannelId);
+  const channel = await client.channels.fetch(state.quotesChannelId);
   const message = await channel.messages.fetch(state.quotesMessageId);
 
   const all = quotes.getAllQuotes();
@@ -36,14 +36,14 @@ async function updateQuotesMessage(client, page = 1) {
   if (page < 1) page = 1;
 
   const start = (page - 1) * perPage;
-  const pageQutoes = all.slice(start, start + perPage);
+  const pageQuotes = all.slice(start, start + perPage);
 
-  const ember = new EmberBuilder()
+  const embed = new EmberBuilder()
     .setTitle(`Lista cytatów - strona ${page}/${totalPages}`)
-    .setDesctription(
-      pageQutoes.length === 0
+    .setDescription(
+      pageQuotes.length === 0
         ? "Brak cytatów"
-        : pageQutoes.map((q) => `**#${q.id}** - ${q.text}`).join("\n"),
+        : pageQuotes.map((q) => `**#${q.id}** - ${q.text}`).join("\n"),
     )
     .setColor("Random");
 
