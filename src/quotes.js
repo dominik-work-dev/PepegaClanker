@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const QUOTES_PATH = path.join(__dirname, "wordOfWisdom.json");
+const QUOTES_PATH = path.join(__dirname, "quotes.json");
 
 // Load quotes
 function loadQuotes() {

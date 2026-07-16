@@ -1,6 +1,11 @@
 require("dotenv").config();
 const triggers = require("./triggers.js");
-const quotes = require("./wordsOfWisdom.js");
+const quotes = require("./quotes.js");
+const {
+  updateQuotesMessage,
+  loadState,
+  saveState,
+} = require("./quotesDisplay.js");
 const {
   Client,
   GatewayIntentBits,
@@ -74,79 +79,163 @@ async function registerCommands() {
 registerCommands();
 
 client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
+  // -------------------------
+  // 1) OBSŁUGA PRZYCISKÓW
+  // -------------------------
+  if (interaction.isButton()) {
+    // PAGINACJA
+    if (
+      interaction.customId.startsWith("quotes_prev_") ||
+      interaction.customId.startsWith("quotes_next_")
+    ) {
+      const [prefix, direction, currentPage] = interaction.customId.split("_");
+      let page = parseInt(currentPage);
 
-  // /ping
-  if (interaction.commandName === "ping") {
-    await interaction.reply("Pong!");
+      if (direction === "prev") page--;
+      if (direction === "next") page++;
+
+      await updateQuotesMessage(client, page);
+      return interaction.deferUpdate();
+    }
+
+    // POTWIERDZENIE UTWORZENIA PERSISTENT MESSAGE
+    if (interaction.customId === "quotes_confirm") {
+      await interaction.deferUpdate();
+
+      const state = loadState();
+
+      if (!state.quotesMessageId) {
+        const msg = await interaction.channel.send("Ładowanie cytatów...");
+        state.quotesMessageId = msg.id;
+        state.quotesChannelId = msg.channel.id;
+        saveState(state);
+      }
+
+      await updateQuotesMessage(client, 1);
+      return;
+    }
+
+    return; // inne przyciski ignorujemy
   }
 
-  // /addquote
-  if (interaction.commandName === "addquote") {
-    const text = interaction.options.getString("text");
+  // -------------------------
+  // 2) OBSŁUGA KOMEND
+  // -------------------------
+  if (interaction.isChatInputCommand()) {
+    // /ping
+    if (interaction.commandName === "ping") {
+      await interaction.reply("Pong!");
+    }
 
-    if (!text || text.trim().length === 0) {
+    // /addquote
+    if (interaction.commandName === "addquote") {
+      const text = interaction.options.getString("text");
+
+      if (!text || text.trim().length === 0) {
+        return interaction.reply({
+          content: "Cytat nie może być pusty you clanker monki",
+          ephemeral: true,
+        });
+      }
+
+      const quote = quotes.addQuote(text);
+      await updateQuotesMessage(client); // odświeża stronę, na której był użytkown
       return interaction.reply({
-        content: "Cytat nie może być pusty you clanker monki",
+        content: `Dodano cytat #${quote.id}: "${quote.text}`,
         ephemeral: true,
       });
     }
 
-    const quote = quotes.addQuote(text);
-    return interaction.reply({
-      content: `Dodano cytat #${quote.id}: "${quote.text}`,
-      ephemeral: true,
-    });
-  }
+    // /quote
+    if (interaction.commandName === "quote") {
+      const quote = quotes.randomQuote();
 
-  // /quote
-  if (interaction.commandName === "quote") {
-    const quote = quotes.randomQuote();
+      if (!quote)
+        return interaction.reply({
+          content: "Lista złotych myśli jest pusta you monki",
+          ephemeral: true,
+        });
 
-    if (!quote)
       return interaction.reply({
-        content: "Lista złotych myśli jest pusta you monki",
-        ephemeral: true,
+        content: `#${quote.id}: ${quote.text}`,
       });
+    }
 
-    return interaction.reply({
-      content: `#${quote.id}: ${quote.text}`,
-    });
-  }
+    // /delquote
+    if (interaction.commandName === "delquote") {
+      const id = interaction.options.getStrin("id");
+      const removed = quotes.deleteQuote(id);
 
-  // /delquote
-  if (interaction.commandName === "delquote") {
-    const id = interaction.options.getStrin("id");
-    const removed = quotes.deleteQuote(id);
+      if (!removed)
+        return interaction.reply({
+          content: `Złota myśl o ID #${id} nie istnieje you monki`,
+          ephemeral: true,
+        });
 
-    if (!removed)
+      await updateQuotesMessage(client); // odświeża stronę, na której był użytkown
       return interaction.reply({
-        content: `Złota myśl o ID #${id} nie istnieje you monki`,
-        ephemeral: true,
-      });
-
-    return interaction.reply({
-      content: `Usnięto cytat #${id}: ${removed.text}`,
-      ephemeral: true,
-    });
-  }
-
-  // /quotes
-  if (interaction.commandName === "quotes") {
-    const all = quotes.getAllQuotes();
-    if (all.length === 0) {
-      return interaction.reply({
-        content: "Brak złotych myśli you clanker",
+        content: `Usnięto cytat #${id}: ${removed.text}`,
         ephemeral: true,
       });
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle("Lista cytatów")
-      .setDescription(all.map((q) => `**#${q.id}** - ${q.text}`).join("\n"))
-      .setColor("Random");
+    // /quotes
+    if (interaction.commandName === "quotes") {
+      const all = quotes.getAllQuotes();
+      if (all.length === 0) {
+        return interaction.reply({
+          content: "Brak złotych myśli you clanker",
+          ephemeral: true,
+        });
+      }
 
-    return interaction.reply({ embeds: [embed] });
+      const embed = new EmbedBuilder()
+        .setTitle("Lista cytatów")
+        .setDescription(all.map((q) => `**#${q.id}** - ${q.text}`).join("\n"))
+        .setColor("Random");
+
+      return interaction.reply({ embeds: [embed] });
+    }
+
+    // /quotespersistenttable
+    if (interaction.commandName === "quotespersistenttable") {
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId("quotes_confirm")
+          .setLabel("Potwierdź")
+          .setStyle(ButtonStyle.Danger),
+      );
+
+      return interaction.reply({
+        content:
+          "⚠ Ta komenda utworzy persistent message z listą złotych myśli. Kontynuować?",
+        components: [row],
+        ephemeral: true,
+      });
+      const state = loadState();
+
+      // jeśli wiadomość już istnieje — tylko odświeżamy
+      if (state.quotesMessageId && state.quotesChannelId) {
+        await updateQuotesMessage(client, 1);
+        return interaction.reply({
+          content: "Zaktualizowano listę.",
+          ephemeral: true,
+        });
+      }
+
+      // tworzymy nową wiadomość
+      const msg = await interaction.channel.send("Ładowanie cytatów...");
+      state.quotesMessageId = msg.id;
+      state.quotesChannelId = msg.channel.id;
+      saveState(state);
+
+      await updateQuotesMessage(client, 1);
+
+      return interaction.reply({
+        content: "Lista cytatów została utworzona.",
+        ephemeral: true,
+      });
+    }
   }
 });
 
