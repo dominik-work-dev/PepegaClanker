@@ -14,6 +14,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   REST,
+  MessageFlags,
   Routes,
 } = require("discord.js");
 
@@ -113,7 +114,7 @@ client.on("interactionCreate", async (interaction) => {
       const state = loadState();
 
       if (!state.quotesMessageId) {
-        const msg = await interaction.channel.send("Ładowanie cytatów...");
+        const msg = await interaction.channel.send("Ładowanie złotych myśli...");
         state.quotesMessageId = msg.id;
         state.quotesChannelId = msg.channel.id;
         saveState(state);
@@ -142,7 +143,7 @@ client.on("interactionCreate", async (interaction) => {
       if (!text || text.trim().length === 0) {
         return interaction.reply({
           content: "Cytat nie może być pusty you clanker monki",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral
         });
       }
 
@@ -150,7 +151,7 @@ client.on("interactionCreate", async (interaction) => {
       await updateQuotesMessage(client); // odświeża stronę, na której był użytkown
       return interaction.reply({
         content: `Dodano cytat #${quote.id}: "${quote.text}"`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral
       });
     }
 
@@ -161,7 +162,7 @@ client.on("interactionCreate", async (interaction) => {
       if (!quote)
         return interaction.reply({
           content: "Lista złotych myśli jest pusta you monki",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral
         });
 
       return interaction.reply({
@@ -177,13 +178,13 @@ client.on("interactionCreate", async (interaction) => {
       if (!removed)
         return interaction.reply({
           content: `Złota myśl o ID #${id} nie istnieje you monki`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral
         });
 
       await updateQuotesMessage(client); // odświeża stronę, na której był użytkown
       return interaction.reply({
         content: `Usnięto cytat #${id}: ${removed.text}`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral
       });
     }
 
@@ -193,7 +194,7 @@ client.on("interactionCreate", async (interaction) => {
       if (all.length === 0) {
         return interaction.reply({
           content: "Brak złotych myśli you clanker",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral
         });
       }
 
@@ -218,7 +219,7 @@ client.on("interactionCreate", async (interaction) => {
         content:
           "⚠ Ta komenda utworzy persistent message z listą złotych myśli. Kontynuować?",
         components: [row],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral
       });
     }
   }
