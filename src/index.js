@@ -85,7 +85,7 @@ client.on("messageCreate", async (message) => {
 
   for (const trigger of triggers) {
     if (!text.includes(trigger.match)) continue; // Check if the message contains the trigger match
-    if (Math.random() > (trigger.chance ?? 1)) continue; // Check if the random chance allows for this trigger to activate
+    if (Math.random() > (trigger.chance ?? 0.5)) continue; // Check if the random chance allows for this trigger to activate
 
     let response = {
       text: trigger.text ?? "",
