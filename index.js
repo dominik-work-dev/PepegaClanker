@@ -64,11 +64,14 @@ client.on("messageCreate", (message) => {
   const text = message.content.toLowerCase().trim();
 
   const triggers = {
-    "pepega": "pepega",
-    "clanker": ":robot:",
-    "doomfist": ":boxing_glove:",
-    "crindzfist": ":boxing_glove:",
-    "cringe": "https://klipy.com/gifs/cringe-diesfromcringe-1",
+    banana: ":banana:",
+    monkey: ":monkey:",
+    monki: ":monkey:",
+    pepega: "pepega",
+    clanker: ":robot:",
+    doomfist: ":boxing_glove:",
+    crindzfist: ":boxing_glove:",
+    cringe: "https://klipy.com/gifs/cringe-diesfromcringe-1",
   };
 
   for (const [key, reply] of Object.entries(triggers)) {
