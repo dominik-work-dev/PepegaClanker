@@ -54,7 +54,7 @@ async function registerCommands() {
           ],
         },
         {
-          name: "delquote",
+          name: "deletequote",
           description: "Usuwa złotą myśl o danym ID",
           options: [
             {
@@ -66,8 +66,12 @@ async function registerCommands() {
           ],
         },
         {
-          name: "quotes",
+          name: "listquotes",
           description: "Listuje wszystkie złote myśli",
+        },
+        {
+          name: "createpersistentquotestable",
+          description: "Tworzy TRWAŁĄ tablice ze złotymi myślami",
         },
       ],
     });
@@ -128,7 +132,7 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.reply("Pong!");
     }
 
-    // /addquote
+    // /addQuote
     if (interaction.commandName === "addquote") {
       const text = interaction.options.getString("text");
 
@@ -162,8 +166,8 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
 
-    // /delquote
-    if (interaction.commandName === "delquote") {
+    // /deleteQuote
+    if (interaction.commandName === "deletequote") {
       const id = interaction.options.getStrin("id");
       const removed = quotes.deleteQuote(id);
 
@@ -180,8 +184,8 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
 
-    // /quotes
-    if (interaction.commandName === "quotes") {
+    // /listQuotes
+    if (interaction.commandName === "listquotes") {
       const all = quotes.getAllQuotes();
       if (all.length === 0) {
         return interaction.reply({
@@ -198,8 +202,8 @@ client.on("interactionCreate", async (interaction) => {
       return interaction.reply({ embeds: [embed] });
     }
 
-    // /quotespersistenttable
-    if (interaction.commandName === "quotespersistenttable") {
+    // /createPersistentQuotesTable
+    if (interaction.commandName === "createpersistentquotestable") {
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId("quotes_confirm")
