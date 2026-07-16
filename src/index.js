@@ -1,5 +1,6 @@
 require("dotenv").config();
 const triggers = require("./triggers.js");
+const quotes = require("./wordsOfWisdom.js");
 const {
   Client,
   GatewayIntentBits,
@@ -43,8 +44,40 @@ registerCommands();
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 
+  // /ping
   if (interaction.commandName === "ping") {
     await interaction.reply("Pong!");
+  }
+
+  // /addquote
+  if (interaction.commandName === "addquote") {
+    const text = interaction.options.getString("text");
+
+    if (!text || text.trim().length === 0) {
+      return interaction.reply("Cytat nie może być pusty you clanker monki.");
+    }
+
+    const quote = quotes.addQuote(text);
+    return interaction.reply(`Dodano cytat #${quote.id}: "${quote.text}`);
+  }
+
+  // /quote
+  if (interaction.commandName === "quote") {
+    const quote = quotes.randomQuote();
+
+    if (!quote) return interaction.reply("Lista złotych myśli jest pusta");
+
+    return interaction.reply(`#${quote.id}: ${quote.text}`);
+  }
+
+  // /delquote
+  if (interaction.commandName === "delquote") {
+    const id = interaction.options.getStrin("id");
+    const removed = quotes.deleteQuote(id);
+
+    if(!removed) return interaction.reply(`Złota myśl o ID #${id} nie istnieje you monki`);
+
+    return interaction.reply(`Usnięto cytat #${id}: ${removed.text}`)
   }
 });
 
@@ -119,10 +152,9 @@ client.on("messageCreate", async (message) => {
       const emoji = message.guild.emojis.cache.find(
         (e) => e.name === response.react,
       );
-      try{ 
+      try {
         await message.react(emoji ?? response.react);
-      }
-      catch (error) {
+      } catch (error) {
         console.error(`Nie udało się zareagować na wiadomość: ${error}`);
       }
     }
