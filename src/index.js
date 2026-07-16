@@ -16,6 +16,7 @@ const {
 
 const dsc_token = process.env.DISCORD_TOKEN;
 const dsc_app_id = process.env.DISCORD_APP_ID;
+const dsc_server_id = process.env.DISCORD_SERVER_ID;
 
 const rest = new REST({ version: "10" }).setToken(dsc_token);
 
@@ -30,7 +31,7 @@ const client = new Client({
 
 async function registerCommands() {
   try {
-    await rest.put(Routes.applicationCommands(dsc_app_id), {
+    await rest.put( Routes.applicationGuildCommands(dsc_app_id, dsc_server_id), {
       body: [
         {
           name: "ping",
