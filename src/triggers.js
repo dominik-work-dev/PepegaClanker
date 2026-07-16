@@ -119,4 +119,12 @@ module.exports = [
     match: "🐒",
     text: ":monkey_face:",
   },
+  {
+    match: "winston",
+    react: ":6493winstare:",
+  },
+  {
+    match: "winton",
+    text: "https://klipy.com/gifs/winston-overwatch-13",
+  },
 ];
