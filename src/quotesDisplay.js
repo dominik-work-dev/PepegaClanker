@@ -61,7 +61,7 @@ async function updateQuotesMessage(client, page = 1) {
       .setDisabled(page === totalPages),
   );
 
-  await message.edit({ embeds: [embed], components: [row] });
+  await message.edit({ content: "", embeds: [embed], components: [row] });
 }
 
 module.exports = {
