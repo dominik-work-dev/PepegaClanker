@@ -24,7 +24,7 @@ async function updateQuotesMessage(client, page = 1) {
   const start = (page - 1) * perPage;
   const pageQuotes = all.slice(start, start + perPage);
 
-  const colId = 4;
+  const colID = 4;
   const colQuote = 32;
 
   const pad = (str, len) =>
@@ -44,7 +44,7 @@ async function updateQuotesMessage(client, page = 1) {
       const q = pageQuotes[i];
       const row =
         pad(String(i + 1 + start), 4) +
-        pad(String(q.id), colId) +
+        pad(String(q.id), colID) +
         pad(q.text, colQuote) +
 
       lines.push(row);

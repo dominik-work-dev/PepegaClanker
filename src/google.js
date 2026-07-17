@@ -57,7 +57,11 @@ module.exports = {
       range: "Quotes!A:B",
       valueInputOption: "RAW",
       requestBody: {
-        values: [["id", "text"], ...filtered.map((q) => [q.id, q.text])],
+        values: [
+          ["id", "text"],
+          ...filtered.map((q) => [q.id, q.text]),
+          ["", ""], // overwrite last row, thus avoiding duplicated 
+        ],
       },
     });
 
