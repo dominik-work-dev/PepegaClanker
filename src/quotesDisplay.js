@@ -39,7 +39,6 @@ async function updateQuotesMessage(client, page = 1) {
     for (let i = 0; i < pageQuotes.length; i++) {
       const q = pageQuotes[i];
       const row =
-        pad(String(i + 1 + start), 4) +
         pad(String(q.id), colID) +
         pad(q.text, colQuote);
 
@@ -49,7 +48,18 @@ async function updateQuotesMessage(client, page = 1) {
 
   const embed = new EmbedBuilder()
     .setTitle(`📜 Lista cytatów - strona ${page}/${totalPages}`)
-    .setDescription("```" + lines.join("\n") + "```")
+    .addFields(
+    {
+      name: "ID",
+      value: pageQuotes.map(q => String(q.id)).join("\n"),
+      inline: true,
+    },
+    {
+      name: "Złota myśl",
+      value: pageQuotes.map(q => q.text).join("\n"),
+      inline: true,
+    }
+  )
     .setColor("Random");
 
   const row = new ActionRowBuilder().addComponents(
