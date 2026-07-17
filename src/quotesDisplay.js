@@ -38,29 +38,25 @@ async function updateQuotesMessage(client, page = 1) {
   } else {
     for (let i = 0; i < pageQuotes.length; i++) {
       const q = pageQuotes[i];
-      const row =
-        pad(String(q.id), colID) +
-        pad(q.text, colQuote);
+      const row = pad(String(q.id), colID) + pad(q.text, colQuote);
 
       lines.push(row);
     }
   }
 
   const embed = new EmbedBuilder()
-    .setTitle(`📜 Lista cytatów - strona ${page}/${totalPages}`)
-    .addFields(
-    {
-      name: "ID",
-      value: pageQuotes.map(q => String(q.id)).join("\n"),
-      inline: true,
-    },
-    {
-      name: "Złota myśl",
-      value: pageQuotes.map(q => q.text).join("\n"),
-      inline: true,
-    }
-  )
+    .setTitle(`📜 Lista clankowania - strona ${page}/${totalPages}`)
     .setColor("Random");
+
+  for (let i = 0; i < pageQuotes.length; i++) {
+    const q = pageQuotes[i];
+
+    embed.addFields({
+      name: `ID ${q.id}`,
+      value: q.text,
+      inline: false,
+    });
+  }
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
