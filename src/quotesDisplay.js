@@ -31,13 +31,9 @@ async function updateQuotesMessage(client, page = 1) {
     str.length > len ? str.slice(0, len - 3) + "..." : str.padEnd(len, " ");
 
   let lines = [];
-  lines.push(
-    pad("#", 4) +
-      pad("ID", colID) +
-      pad("Złota myśl", colQuote)
-  );
+  lines.push(pad("#", 4) + pad("ID", colID) + pad("Złota myśl", colQuote));
 
-  if(pageQuotes.length === 0) {
+  if (pageQuotes.length === 0) {
     lines.push("Brak złotych myśli");
   } else {
     for (let i = 0; i < pageQuotes.length; i++) {
@@ -45,7 +41,7 @@ async function updateQuotesMessage(client, page = 1) {
       const row =
         pad(String(i + 1 + start), 4) +
         pad(String(q.id), colID) +
-        pad(q.text, colQuote) +
+        pad(q.text, colQuote);
 
       lines.push(row);
     }
