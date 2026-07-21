@@ -24,10 +24,6 @@ module.exports = [
     text: ":question:",
   },
   {
-    match: "liga",
-    customEmoji: "pepeGun",
-  },
-  {
     match: "banana",
     text: ":banana:",
   },
@@ -83,7 +79,12 @@ module.exports = [
   },
   {
     match: "liga",
-    customEmoji: "monkikick",
+    weighted: true,
+    responses: [
+      { customEmoji: "monkikick", weigth: 50 },
+      { customEmoji: "pepeGun", weight: 30},
+      { text: "https://klipy.com/gifs/stare-cat-stare-1", wieght: 20 },
+    ],
   },
   {
     match: "genji",
