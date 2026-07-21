@@ -17,6 +17,7 @@ const {
   MessageFlags,
   Routes,
 } = require("discord.js");
+const playMusic = require("./play.js");
 
 const dsc_token = process.env.DISCORD_TOKEN;
 const dsc_app_id = process.env.DISCORD_APP_ID;
@@ -40,6 +41,18 @@ async function registerCommands() {
         {
           name: "ping",
           description: "Sprawdzenie czy bot działa",
+        },
+        {
+          name: "play",
+          description: "Odtwarza muzykę z YouTube",
+          options: [
+            {
+              type: 3, // STRING
+              name: "url",
+              description: "Link do utworu na YouTube",
+              required: true,
+            },
+          ],
         },
         {
           name: "quote",
@@ -137,6 +150,10 @@ client.on("interactionCreate", async (interaction) => {
     // /ping
     if (interaction.commandName === "ping") {
       await interaction.reply("Pong!");
+    }
+
+    if (interaction.commandName === "play") {
+      return playMusic.execute(interaction);
     }
 
     // /addQuote
