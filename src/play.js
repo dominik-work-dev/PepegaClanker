@@ -1,6 +1,8 @@
+const { content } = require("googleapis/build/src/apis/content");
 const MusicQueue = require("./musicQueue");
 const { playSong } = require("./player");
 const { joinVoiceChannel } = require("@discordjs/voice");
+const { MessageFlags } = require("discord.js");
 
 const queues = new Map();
 
@@ -12,7 +14,11 @@ module.exports = {
     const url = interaction.options.getString("url");
     const voiceChannel = interaction.member.voice.channel;
 
-    if (!voiceChannel) return interaction.reply("Musisz być na voice!");
+    if (!voiceChannel)
+      return interaction.reply({
+        content: "Musisz być na voice!",
+        flags: MessageFlags.Ephemeral,
+      });
 
     let queue = queues.get(interaction.guild.id);
     if (!queue) {
