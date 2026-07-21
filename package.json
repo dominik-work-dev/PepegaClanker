@@ -11,9 +11,9 @@
   "type": "commonjs",
   "dependencies": {
     "@discordjs/voice": "^0.19.2",
+    "@distube/ytdl-core": "^4.16.12",
     "discord.js": "^14.27.0",
     "dotenv": "^17.4.2",
-    "googleapis": "^173.0.0",
-    "play-dl": "^1.9.7"
+    "googleapis": "^173.0.0"
   }
 }

@@ -1,15 +1,14 @@
 const { createAudioPlayer, createAudioResource } = require("@discordjs/voice");
-
-const playdl = require("play-dl");
+const ytdl = require("@distube/ytdl-core");
 
 async function playSong(queue, song) {
   console.log("playSong() dostał:", song);
-  // pobierz strumień audio z YouTube
-  const stream = await playdl.stream(song.url);
-
-  const resource = createAudioResource(stream.stream, {
-    inputType: stream.type,
+  const stream = ytdl(song.url, {
+    filter: "audioonly",
+    highWaterMark: 1 << 25,
   });
+
+  const resource = createAudioResource(stream);
 
   const player = createAudioPlayer();
   queue.player = player;
