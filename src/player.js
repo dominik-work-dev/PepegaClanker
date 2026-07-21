@@ -3,6 +3,7 @@ const { createAudioPlayer, createAudioResource } = require("@discordjs/voice");
 const playdl = require("play-dl");
 
 async function playSong(queue, song) {
+  console.log("playSong() dostał:", song);
   // pobierz strumień audio z YouTube
   const stream = await playdl.stream(song.url);
 

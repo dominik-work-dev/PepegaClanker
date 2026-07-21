@@ -1,4 +1,3 @@
-const { content } = require("googleapis/build/src/apis/content");
 const MusicQueue = require("./musicQueue");
 const { playSong } = require("./player");
 const { joinVoiceChannel } = require("@discordjs/voice");
@@ -12,7 +11,20 @@ module.exports = {
 
   async execute(interaction) {
     const url = interaction.options.getString("url");
+    console.log("URL z komendy:", url);
     const voiceChannel = interaction.member.voice.channel;
+    // send play log to specific channel
+    const targetChannel = interaction.guild.channels.cache.get(
+      "1529265913184915476",
+    );
+
+    // WALIDACJA URL
+    if (!url || !url.startsWith("http")) {
+      return interaction.reply({
+        content: "Podaj poprawny link do YouTube!",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
 
     if (!voiceChannel)
       return interaction.reply({
@@ -31,7 +43,7 @@ module.exports = {
         guildId: interaction.guild.id,
         adapterCreator: interaction.guild.voiceAdapterCreator,
         selfDeaf: false,
-        selfMute: false
+        selfMute: false,
       });
 
       queues.set(interaction.guild.id, queue);
@@ -44,8 +56,14 @@ module.exports = {
     };
 
     queue.addSong(song);
+    console.log("Dodaję do kolejki:", song);
 
-    interaction.reply(`Dodano do kolejki: ${url}`);
+
+    targetChannel.send(`Dodano do kolejki: ${url}`);
+    interaction.reply({
+      content: `Dodano do kolejki: ${url}`,
+      flags: MessageFlags.Ephemeral,
+    });
 
     if (!queue.isPlaying) {
       queue.isPlaying = true;
