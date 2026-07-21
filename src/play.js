@@ -30,6 +30,8 @@ module.exports = {
         channelId: voiceChannel.id,
         guildId: interaction.guild.id,
         adapterCreator: interaction.guild.voiceAdapterCreator,
+        selfDeaf: false,
+        selfMute: false
       });
 
       queues.set(interaction.guild.id, queue);
