@@ -56,8 +56,6 @@ module.exports = {
 
     queue.addSong(song);
 
-    targetChannel.send(`Dodano do kolejki: ${url}`);
-
     if (!queue.isPlaying) {
       queue.isPlaying = true;
       playSong(queue, song);
