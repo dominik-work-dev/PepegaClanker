@@ -48,6 +48,11 @@ module.exports = {
       requestedBy: interaction.user.displayName,
     };
 
+    interaction.reply({
+      content: `Dodano do kolejki: ${url}`,
+      flags: MessageFlags.Ephemeral,
+    });
+
     queue.addSong(song);
 
     if (!queue.isPlaying) {
