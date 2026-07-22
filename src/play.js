@@ -2,6 +2,7 @@ const { playSong } = require("./player");
 const { joinVoiceChannel } = require("@discordjs/voice");
 const { MessageFlags } = require("discord.js");
 const { MusicQueue, queues } = require("./musicQueue");
+const { updateNowPlaying } = require("./musicQueueDisplay");
 
 module.exports = {
   name: "play",
@@ -58,6 +59,8 @@ module.exports = {
     if (!queue.isPlaying) {
       queue.isPlaying = true;
       playSong(queue);
+    } else {
+      await updateNowPlaying(queue)
     }
   },
 };

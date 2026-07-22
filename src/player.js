@@ -16,6 +16,7 @@ async function playSong(queue) {
     queue.isPlaying = false;
     return;
   }
+  queue.currentlyPlaying = song;
   const stream = createYtDlpStream(song.url);
 
   const resource = createAudioResource(stream, {
@@ -29,7 +30,7 @@ async function playSong(queue) {
   queue.connection.subscribe(player);
 
   // Aktualizuj / wyślij wiadomość "Teraz odtwarzane"
-  await updateNowPlaying(queue, song);
+  await updateNowPlaying(queue);
 
   player.on("idle", () => {
     playSong(queue);

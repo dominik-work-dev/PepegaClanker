@@ -67,7 +67,8 @@ function buildControlButtons() {
  * @param {import('./musicQueue')} queue
  * @param {object} currentSong - piosenka aktualnie odtwarzana
  */
-async function updateNowPlaying(queue, currentSong) {
+async function updateNowPlaying(queue) {
+  const currentSong = queue.currentlyPlaying;
   const embed = buildNowPlayingEmbed(currentSong, queue);
   const buttons = buildControlButtons();
 
