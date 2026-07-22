@@ -12,10 +12,6 @@ module.exports = {
   async execute(interaction) {
     const url = interaction.options.getString("url");
     const voiceChannel = interaction.member.voice.channel;
-    // send play log to specific channel
-    const targetChannel = interaction.guild.channels.cache.get(
-      "1529265913184915476",
-    );
 
     // WALIDACJA URL
     if (!url || !url.startsWith("http")) {
