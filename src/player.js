@@ -1,14 +1,12 @@
-const { createAudioPlayer, createAudioResource } = require("@discordjs/voice");
-const ytdl = require("@distube/ytdl-core");
+const { createAudioPlayer, createAudioResource, StreamType } = require("@discordjs/voice");
+const { createYtDlpStream } = require("./ytdlpStream");
 
 async function playSong(queue, song) {
-  console.log("playSong() dostał:", song);
-  const stream = ytdl(song.url, {
-    filter: "audioonly",
-    highWaterMark: 1 << 25,
-  });
+  const stream = createYtDlpStream(song.url);
 
-  const resource = createAudioResource(stream);
+  const resource = createAudioResource(stream, {
+    inputType: StreamType.Raw, // bo FFmpeg zwraca surowe PCM (s16le)
+  });
 
   const player = createAudioPlayer();
   queue.player = player;
@@ -27,10 +25,12 @@ async function playSong(queue, song) {
   });
 
   player.on("error", (err) => {
-    console.error("Player error:", err);
+    console.error("Player error:", err.message);
     const next = queue.nextSong();
     if (!next) {
-      queue.connection.destroy();
+      if (queue.connection.state.status !== "destroyed") {
+        queue.connection.destroy();
+      }
       queue.isPlaying = false;
       return;
     }

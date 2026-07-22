@@ -11,7 +11,6 @@ module.exports = {
 
   async execute(interaction) {
     const url = interaction.options.getString("url");
-    console.log("URL z komendy:", url);
     const voiceChannel = interaction.member.voice.channel;
     // send play log to specific channel
     const targetChannel = interaction.guild.channels.cache.get(
@@ -56,8 +55,6 @@ module.exports = {
     };
 
     queue.addSong(song);
-    console.log("Dodaję do kolejki:", song);
-
 
     targetChannel.send(`Dodano do kolejki: ${url}`);
     interaction.reply({
