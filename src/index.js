@@ -169,9 +169,20 @@ client.on("interactionCreate", async (interaction) => {
       if (interaction.customId === "music_stop") {
         queue.songs = [];
         queue.isPlaying = false;
-        queue.currentSong = null;
+        queue.currentlyPlaying = null;
         if (queue.connection && queue.connection.state.status !== "destroyed") {
           queue.connection.destroy();
+        }
+        if (queue.nowPlayingMessage) {
+          try {
+            await queue.nowPlayingMessage.delete();
+          } catch (err) {
+            console.warn(
+              "Nie udało się usunąć wiadomości Now Playing:",
+              err.message,
+            );
+          }
+          queue.nowPlayingMessage = null;
         }
         await interaction.deferUpdate();
       }

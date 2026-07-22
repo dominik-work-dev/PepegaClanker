@@ -14,8 +14,22 @@ async function playSong(queue) {
       queue.connection.destroy();
     }
     queue.isPlaying = false;
+    queue.currentlyPlaying = null;
+    // Usuń wiadomość "Teraz odtwarzane", skoro kolejka się skończyła
+    if (queue.nowPlayingMessage) {
+      try {
+        await queue.nowPlayingMessage.delete();
+      } catch (err) {
+        console.warn(
+          "Nie udało się usunąć wiadomości Now Playing:",
+          err.message,
+        );
+      }
+      queue.nowPlayingMessage = null;
+    }
     return;
   }
+  
   queue.currentlyPlaying = song;
   const stream = createYtDlpStream(song.url);
 
@@ -38,7 +52,7 @@ async function playSong(queue) {
 
   player.on("error", (err) => {
     console.error("Player error:", err.message);
-    playSong(queue, next);
+    playSong(queue);
   });
 }
 
