@@ -18,6 +18,7 @@ const {
   Routes,
 } = require("discord.js");
 const playMusic = require("./play.js");
+const queues = require("./musicQueue")
 
 const dsc_token = process.env.DISCORD_TOKEN;
 const dsc_app_id = process.env.DISCORD_APP_ID;

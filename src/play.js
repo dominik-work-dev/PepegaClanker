@@ -1,9 +1,7 @@
-const MusicQueue = require("./musicQueue");
 const { playSong } = require("./player");
 const { joinVoiceChannel } = require("@discordjs/voice");
 const { MessageFlags } = require("discord.js");
-
-const queues = new Map();
+const { MusicQueue, queues } = require("./musicQueue");
 
 module.exports = {
   name: "play",

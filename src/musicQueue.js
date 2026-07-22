@@ -19,4 +19,6 @@ class MusicQueue {
   }
 }
 
-module.exports = MusicQueue;
+const queues = new Map();
+
+module.exports = { MusicQueue, queues };
