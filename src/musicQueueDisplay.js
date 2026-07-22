@@ -51,10 +51,6 @@ function buildNowPlayingEmbed(current, queue) {
 function buildControlButtons() {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("music_pause")
-      .setEmoji("⏸️")
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
       .setCustomId("music_skip")
       .setEmoji("⏭️")
       .setStyle(ButtonStyle.Secondary),

@@ -18,7 +18,7 @@ const {
   Routes,
 } = require("discord.js");
 const playMusic = require("./play.js");
-const queues = require("./musicQueue")
+const queues = require("./musicQueue");
 
 const dsc_token = process.env.DISCORD_TOKEN;
 const dsc_app_id = process.env.DISCORD_APP_ID;
@@ -153,25 +153,38 @@ client.on("interactionCreate", async (interaction) => {
         ephemeral: true,
       });
     }
-    if (interaction.customId === "music_pause") {
-      if (queue.player.state.status === "playing") {
-        queue.player.pause();
-      } else {
-        queue.player.unpause();
+
+    try {
+      if (interaction.customId === "music_skip") {
+        if (!queue.player) {
+          return interaction.reply({
+            content: "Nic teraz nie gra.",
+            flags: MessageFlags.Ephemeral,
+          });
+        }
+        queue.player.stop();
+        await interaction.deferUpdate();
       }
-      await interaction.deferUpdate();
-    }
-    if (interaction.customId === "music_skip") {
-      queue.player.stop(); // wywoła zdarzenie "idle" -> zagra kolejną piosenkę
-      await interaction.deferUpdate();
-    }
-    if (interaction.customId === "music_stop") {
-      queue.songs = [];
-      queue.isPlaying = false;
-      if (queue.connection.state.status !== "destroyed") {
-        queue.connection.destroy();
+
+      if (interaction.customId === "music_stop") {
+        queue.songs = [];
+        queue.isPlaying = false;
+        queue.currentSong = null;
+        if (queue.connection && queue.connection.state.status !== "destroyed") {
+          queue.connection.destroy();
+        }
+        await interaction.deferUpdate();
       }
-      await interaction.deferUpdate();
+    } catch (err) {
+      console.error("Błąd obsługi przycisku muzycznego:", err);
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction
+          .reply({
+            content: "Wystąpił błąd przy obsłudze przycisku.",
+            flags: MessageFlags.Ephemeral,
+          })
+          .catch(() => {});
+      }
     }
 
     return; // inne przyciski ignorujemy
