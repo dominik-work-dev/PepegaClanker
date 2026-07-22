@@ -16,7 +16,11 @@ function prepareCookiesFile() {
     cookiesFilePath = testPath;
     console.log("[cookies] Zapisano cookies do", testPath);
   } catch (err) {
-    console.warn("[cookies] Nie udało się zapisać pliku (", err.message, "), użyję /dev/stdin jako fallback");
+    console.warn(
+      "[cookies] Nie udało się zapisać pliku (",
+      err.message,
+      "), użyję /dev/stdin jako fallback",
+    );
     cookiesFilePath = null;
   }
 }
@@ -37,12 +41,14 @@ function createYtDlpStream(url) {
   const args = [
     url,
     "-f",
-    "bestaudio/best",
+    "140",
     "-o",
     "-",
     "--quiet",
     "--no-warnings",
     "--no-playlist",
+    "--extractor-args",
+    "youtube:player_client=android,web",
   ];
 
   if (cookiesFilePath) {
@@ -96,6 +102,5 @@ function createYtDlpStream(url) {
 
   return ffmpeg;
 }
-
 
 module.exports = { createYtDlpStream, prepareCookiesFile, getCookiesFilePath };
