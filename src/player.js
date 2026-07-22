@@ -6,7 +6,16 @@ const {
 const { createYtDlpStream } = require("./ytdlpStream");
 const { updateNowPlaying } = require("./musicQueueDisplay");
 
-async function playSong(queue, song) {
+async function playSong(queue) {
+  const song = queue.nextSong();
+
+  if (!song) {
+    if (queue.connection.state.status !== "destroyed") {
+      queue.connection.destroy();
+    }
+    queue.isPlaying = false;
+    return;
+  }
   const stream = createYtDlpStream(song.url);
 
   const resource = createAudioResource(stream, {
@@ -23,27 +32,11 @@ async function playSong(queue, song) {
   await updateNowPlaying(queue, song);
 
   player.on("idle", () => {
-    const next = queue.nextSong();
-    if (!next) {
-      if (queue.connection.state.status !== "destroyed") {
-        queue.connection.destroy();
-      }
-      queue.isPlaying = false;
-      return;
-    }
-    playSong(queue, next);
+    playSong(queue);
   });
 
   player.on("error", (err) => {
     console.error("Player error:", err.message);
-    const next = queue.nextSong();
-    if (!next) {
-      if (queue.connection.state.status !== "destroyed") {
-        queue.connection.destroy();
-      }
-      queue.isPlaying = false;
-      return;
-    }
     playSong(queue, next);
   });
 }

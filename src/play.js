@@ -57,7 +57,7 @@ module.exports = {
 
     if (!queue.isPlaying) {
       queue.isPlaying = true;
-      playSong(queue, song);
+      playSong(queue);
     }
   },
 };
