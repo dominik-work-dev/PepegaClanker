@@ -10,7 +10,7 @@ const prism = require("prism-media");
 function createYtDlpStream(url) {
   const args = [
     url,
-    "-f", "bestaudio",
+    "-f", "bestaudio/best",
     "-o", "-",
     "--quiet",
     "--no-warnings",

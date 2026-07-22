@@ -51,7 +51,7 @@ module.exports = {
     const song = {
       title: url,
       url: url,
-      requestedBy: interaction.user.display_name,
+      requestedBy: interaction.user.displayName,
     };
 
     queue.addSong(song);
