@@ -87,10 +87,10 @@ async function registerCommands() {
           name: "listquotes",
           description: "Listuje wszystkie złote myśli",
         },
-        {
+        /*{
           name: "createpersistentquotestable",
           description: "Tworzy TRWAŁĄ tablice ze złotymi myślami",
-        },
+        },*/
       ],
     });
     console.log("Komendy zostały zarejestrowane.");
