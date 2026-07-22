@@ -41,7 +41,7 @@ function createYtDlpStream(url) {
   const args = [
     url,
     "-f",
-    "140",
+    "bestaudio[ext=m4a]/bestaudio/best",
     "-o",
     "-",
     "--quiet",
@@ -59,7 +59,9 @@ function createYtDlpStream(url) {
     args.push("--cookies", "/dev/stdin");
   }
 
-  const ytdlp = spawn("yt-dlp", args, { stdio: ["ignore", "pipe", "pipe"] });
+  const ytdlp = spawn("yt-dlp", args, {
+    stdio: [useStdinCookies ? "pipe" : "ignore", "pipe", "pipe"],
+  });
 
   if (useStdinCookies) {
     ytdlp.stdin.write(cookiesContent);
