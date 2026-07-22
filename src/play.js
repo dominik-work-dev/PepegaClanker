@@ -57,10 +57,6 @@ module.exports = {
     queue.addSong(song);
 
     targetChannel.send(`Dodano do kolejki: ${url}`);
-    interaction.reply({
-      content: `Dodano do kolejki: ${url}`,
-      flags: MessageFlags.Ephemeral,
-    });
 
     if (!queue.isPlaying) {
       queue.isPlaying = true;

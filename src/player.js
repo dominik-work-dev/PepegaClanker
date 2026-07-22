@@ -1,11 +1,16 @@
-const { createAudioPlayer, createAudioResource, StreamType } = require("@discordjs/voice");
+const {
+  createAudioPlayer,
+  createAudioResource,
+  StreamType,
+} = require("@discordjs/voice");
 const { createYtDlpStream } = require("./ytdlpStream");
+const { updateNowPlaying } = require("./musicQueueDisplay");
 
 async function playSong(queue, song) {
   const stream = createYtDlpStream(song.url);
 
   const resource = createAudioResource(stream, {
-    inputType: StreamType.Raw, // bo FFmpeg zwraca surowe PCM (s16le)
+    inputType: StreamType.Raw, // ffmpeg zwraca surowe PCM (s16le)
   });
 
   const player = createAudioPlayer();
@@ -14,10 +19,15 @@ async function playSong(queue, song) {
   player.play(resource);
   queue.connection.subscribe(player);
 
+  // Aktualizuj / wyślij wiadomość "Teraz odtwarzane"
+  await updateNowPlaying(queue);
+
   player.on("idle", () => {
     const next = queue.nextSong();
     if (!next) {
-      queue.connection.destroy();
+      if (queue.connection.state.status !== "destroyed") {
+        queue.connection.destroy();
+      }
       queue.isPlaying = false;
       return;
     }

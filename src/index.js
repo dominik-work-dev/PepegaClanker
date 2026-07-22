@@ -141,6 +141,34 @@ client.on("interactionCreate", async (interaction) => {
       return;
     }
 
+    const queue = queues.get(interaction.guildId);
+    if (!queue) {
+      return interaction.reply({
+        content: "Nic teraz nie gra.",
+        ephemeral: true,
+      });
+    }
+    if (interaction.customId === "music_pause") {
+      if (queue.player.state.status === "playing") {
+        queue.player.pause();
+      } else {
+        queue.player.unpause();
+      }
+      await interaction.deferUpdate();
+    }
+    if (interaction.customId === "music_skip") {
+      queue.player.stop(); // wywoła zdarzenie "idle" -> zagra kolejną piosenkę
+      await interaction.deferUpdate();
+    }
+    if (interaction.customId === "music_stop") {
+      queue.songs = [];
+      queue.isPlaying = false;
+      if (queue.connection.state.status !== "destroyed") {
+        queue.connection.destroy();
+      }
+      await interaction.deferUpdate();
+    }
+
     return; // inne przyciski ignorujemy
   }
 

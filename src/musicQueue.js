@@ -7,6 +7,7 @@ class MusicQueue {
     this.textChannel = null;
     this.voiceChannel = null;
     this.isPlaying = false;
+    this.nowPlayingMessage = null;
   }
 
   addSong(song) {

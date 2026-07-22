@@ -1,19 +1,26 @@
-// src/ytdlpStream.js
 const { spawn } = require("child_process");
 const prism = require("prism-media");
 
+/**
+ * Tworzy strumień audio (PCM s16le 48kHz stereo) na podstawie URL-a,
+ * używając yt-dlp (pobieranie/ekstrakcja) + ffmpeg (transkodowanie).
+ * @param {string} url
+ * @returns {import('prism-media').FFmpeg}
+ */
 function createYtDlpStream(url) {
   const ytdlp = spawn(
     "yt-dlp",
     [
       url,
-      "-f", "bestaudio",
-      "-o", "-",
+      "-f",
+      "bestaudio",
+      "-o",
+      "-",
       "--quiet",
       "--no-warnings",
       "--no-playlist",
     ],
-    { stdio: ["ignore", "pipe", "pipe"] } // pipe stderr żeby móc logować błędy
+    { stdio: ["ignore", "pipe", "pipe"] },
   );
 
   ytdlp.stderr.on("data", (chunk) => {
@@ -26,12 +33,18 @@ function createYtDlpStream(url) {
 
   const ffmpeg = new prism.FFmpeg({
     args: [
-      "-analyzeduration", "0",
-      "-loglevel", "0",
-      "-i", "pipe:0",
-      "-f", "s16le",
-      "-ar", "48000",
-      "-ac", "2",
+      "-analyzeduration",
+      "0",
+      "-loglevel",
+      "0",
+      "-i",
+      "pipe:0",
+      "-f",
+      "s16le",
+      "-ar",
+      "48000",
+      "-ac",
+      "2",
     ],
   });
 
@@ -44,7 +57,7 @@ function createYtDlpStream(url) {
   ffmpeg.on("close", cleanup);
   ffmpeg.on("error", cleanup);
 
-  return ffmpeg; // to jest Twój playStream
+  return ffmpeg;
 }
 
 module.exports = { createYtDlpStream };
