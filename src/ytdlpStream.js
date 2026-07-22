@@ -1,6 +1,7 @@
 const { spawn } = require("child_process");
 const prism = require("prism-media");
 const path = require("path");
+const fs = require("fs");
 
 let cookiesFilePath = null;
 
