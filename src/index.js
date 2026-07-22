@@ -19,6 +19,7 @@ const {
 } = require("discord.js");
 const playMusic = require("./play.js");
 const { queues } = require("./musicQueue");
+const { startNicknameChanger } = require("./clankerNick");
 
 const dsc_token = process.env.DISCORD_TOKEN;
 const dsc_app_id = process.env.DISCORD_APP_ID;
@@ -311,6 +312,7 @@ client.on("interactionCreate", async (interaction) => {
 
 client.on("clientReady", () => {
   console.log(`Bot zalogowany jako ${client.user.tag}`);
+  startNicknameChanger(client);
 });
 
 client.on("guildMemberRemove", (member) => {
