@@ -22,6 +22,14 @@ const playMusic = require("./play.js");
 const dsc_token = process.env.DISCORD_TOKEN;
 const dsc_app_id = process.env.DISCORD_APP_ID;
 const dsc_server_id = process.env.DISCORD_SERVER_ID;
+const fs = require("fs");
+const path = require("path");
+
+if (process.env.YTDLP_COOKIES_CONTENT) {
+  const cookiesPath = path.join("/tmp", "cookies.txt");
+  fs.writeFileSync(cookiesPath, process.env.YTDLP_COOKIES_CONTENT);
+  process.env.YTDLP_COOKIES_PATH = cookiesPath;
+}
 
 const rest = new REST({ version: "10" }).setToken(dsc_token);
 

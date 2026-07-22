@@ -20,7 +20,7 @@ async function playSong(queue, song) {
   queue.connection.subscribe(player);
 
   // Aktualizuj / wyślij wiadomość "Teraz odtwarzane"
-  await updateNowPlaying(queue);
+  await updateNowPlaying(queue, song);
 
   player.on("idle", () => {
     const next = queue.nextSong();

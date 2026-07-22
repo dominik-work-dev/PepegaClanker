@@ -7,11 +7,25 @@ const {
 
 /**
  * Buduje embed z aktualnie graną piosenką i najbliższymi w kolejce.
+ * @param {object} current - piosenka aktualnie odtwarzana (przekazana jawnie z playSong)
  * @param {import('./musicQueue')} queue
  */
-function buildNowPlayingEmbed(queue) {
-  const current = queue.songs[0];
-  const upNext = queue.songs.slice(1, 6); // pokaż max 5 kolejnych
+function buildNowPlayingEmbed(current, queue) {
+  // Bezpieczne zabezpieczenie - jeśli z jakiegoś powodu "current" nie dotarło,
+  // nie wywalaj bota, tylko zwróć prosty embed z informacją.
+  if (!current) {
+    return new EmbedBuilder()
+      .setColor(0x5865f2)
+      .setTitle("🎵 Teraz odtwarzane")
+      .setDescription("Brak informacji o aktualnym utworze.");
+  }
+
+  // upNext bazuje na queue.songs - to co zostało w kolejce po "current".
+  // Jeśli Twój nextSong()/addSong() trzyma current TAKŻE w queue.songs[0],
+  // odetnij go; w przeciwnym razie queue.songs to już same nadchodzące utwory.
+  const upNext = queue.songs[0] === current
+    ? queue.songs.slice(1, 6)
+    : queue.songs.slice(0, 5);
 
   const embed = new EmbedBuilder()
     .setColor(0x5865f2)
@@ -55,9 +69,10 @@ function buildControlButtons() {
  * Wysyła nową wiadomość "Teraz odtwarzane" albo edytuje istniejącą,
  * jeśli już jedna istnieje dla tej kolejki.
  * @param {import('./musicQueue')} queue
+ * @param {object} currentSong - piosenka aktualnie odtwarzana
  */
-async function updateNowPlaying(queue) {
-  const embed = buildNowPlayingEmbed(queue);
+async function updateNowPlaying(queue, currentSong) {
+  const embed = buildNowPlayingEmbed(currentSong, queue);
   const buttons = buildControlButtons();
 
   if (queue.nowPlayingMessage) {
@@ -67,8 +82,8 @@ async function updateNowPlaying(queue) {
         components: [buttons],
       });
       return;
-    } catch {
-      // Wiadomość mogła zostać usunięta ręcznie na Discordzie - wyślij nową.
+    } catch (err) {
+      console.warn("Nie udało się zedytować wiadomości Now Playing, wysyłam nową:", err.message);
     }
   }
 

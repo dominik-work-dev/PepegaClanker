@@ -8,20 +8,22 @@ const prism = require("prism-media");
  * @returns {import('prism-media').FFmpeg}
  */
 function createYtDlpStream(url) {
-  const ytdlp = spawn(
-    "yt-dlp",
-    [
-      url,
-      "-f",
-      "bestaudio",
-      "-o",
-      "-",
-      "--quiet",
-      "--no-warnings",
-      "--no-playlist",
-    ],
-    { stdio: ["ignore", "pipe", "pipe"] },
-  );
+  const args = [
+    url,
+    "-f", "bestaudio",
+    "-o", "-",
+    "--quiet",
+    "--no-warnings",
+    "--no-playlist",
+  ];
+
+  // Jeśli ustawiono ścieżkę do pliku cookies (potrzebne, gdy YouTube
+  // żąda "Sign in to confirm you're not a bot"), dołącz ją do yt-dlp.
+  if (process.env.YTDLP_COOKIES_PATH) {
+    args.push("--cookies", process.env.YTDLP_COOKIES_PATH);
+  }
+
+  const ytdlp = spawn("yt-dlp", args, { stdio: ["ignore", "pipe", "pipe"] });
 
   ytdlp.stderr.on("data", (chunk) => {
     console.error("[yt-dlp stderr]", chunk.toString());
@@ -33,18 +35,12 @@ function createYtDlpStream(url) {
 
   const ffmpeg = new prism.FFmpeg({
     args: [
-      "-analyzeduration",
-      "0",
-      "-loglevel",
-      "0",
-      "-i",
-      "pipe:0",
-      "-f",
-      "s16le",
-      "-ar",
-      "48000",
-      "-ac",
-      "2",
+      "-analyzeduration", "0",
+      "-loglevel", "0",
+      "-i", "pipe:0",
+      "-f", "s16le",
+      "-ar", "48000",
+      "-ac", "2",
     ],
   });
 
